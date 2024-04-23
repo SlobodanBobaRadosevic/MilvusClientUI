@@ -35,7 +35,7 @@ const HomeComponent = () => {
 
   return (
     <div>
-      <h2>Tab 1 Content</h2>
+      <h2>Search</h2>
       <MaterialTable columns={columns} data={data} />
     </div>
   );

@@ -1,8 +1,9 @@
-// src/Layout.js
 import React, { useState } from 'react';
 import { Tabs, Tab, Drawer } from '@mui/material';
 import HomeComponent from './pages/HomeComponent';
 import SearchComponent from './pages/SearchComponent';
+import HomeIcon from '@mui/icons-material/Home';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Layout = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -14,11 +15,11 @@ const Layout = () => {
     <div style={{ display: 'flex' }}>
       <Drawer variant="permanent">
         <Tabs orientation="vertical" value={selectedTab} onChange={handleTabChange}>
-          <Tab label="Tab 1" />
-          <Tab label="Tab 2" />
+          <Tab icon={<SearchIcon />} />
+          <Tab icon={<HomeIcon />} />
         </Tabs>
       </Drawer>
-      <div style={{ marginLeft: '151px', marginRight: '60px' }}>
+      <div style={{ marginLeft: '111px', marginRight: '60px' }}>
         {selectedTab === 0 && <HomeComponent />}
         {selectedTab === 1 && <SearchComponent />}
       </div>

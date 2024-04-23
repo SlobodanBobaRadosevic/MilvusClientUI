@@ -16,3 +16,13 @@ code {
 .custom-container {
   max-width: 100% !important;
 }
+
+.MuiTabs-vertical button {
+  min-width: 50px !important;
+}
+
+table thead tr:first-child th {
+  border-bottom: 2px solid #333;
+  font-weight: bold;
+  color: #333;
+}

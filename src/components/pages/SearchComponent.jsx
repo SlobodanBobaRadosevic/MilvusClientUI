@@ -1,7 +1,7 @@
 import React from 'react';
 
 const SearchComponent = () => {
-  return <div>This is Tab 2 content</div>;
+  return <div>Tab 2</div>;
 };
 
 export default SearchComponent;
