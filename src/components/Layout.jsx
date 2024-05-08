@@ -15,11 +15,11 @@ const Layout = () => {
     <div style={{ display: 'flex' }}>
       <Drawer variant="permanent">
         <Tabs orientation="vertical" value={selectedTab} onChange={handleTabChange}>
-          <Tab icon={<SearchIcon />} />
           <Tab icon={<HomeIcon />} />
+          {/* <Tab icon={<HomeIcon />} /> */}
         </Tabs>
       </Drawer>
-      <div style={{ marginLeft: '111px', marginRight: '60px' }}>
+      <div className='main-container-div'>
         {selectedTab === 0 && <HomeComponent />}
         {selectedTab === 1 && <SearchComponent />}
       </div>

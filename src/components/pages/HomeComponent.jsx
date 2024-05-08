@@ -1,43 +1,316 @@
-// src/Tab1.js
-import React from 'react';
-import MaterialTable from '../MaterialTableComponent';
+import React, { useState } from "react";
+import MaterialTable from "../MaterialTableComponent";
+import {
+  Grid,
+  Paper,
+  TextField,
+  Button,
+  Container,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import SearchClient from "../../api-service/search-api/search";
 
 const HomeComponent = () => {
+  const searchClient = new SearchClient();
+  const [globalSearch, setGlobalSearch] = useState("");
+  const [id, setId] = useState("");
+  const [score, setScore] = useState("");
+  const [title, setTitle] = useState("");
+  const [link, setLink] = useState("");
+  const [readingTimeOperator, setReadingTimeOperator] = useState("=");
+  const [readingTimeValue, setReadingTimeValue] = useState("");
+  const [clapsOperator, setClapsOperator] = useState("=");
+  const [clapsValue, setClapsValue] = useState("");
+  const [publication, setPublication] = useState("");
+  const [indexType, setIndexType] = useState("");
+  const [metric, setMetric] = useState("");
+  const [tableData, setTableData] = useState([]);
+
+  const handleIndexTypeChange = (event) => {
+    setIndexType(event.target.value);
+  };
+
+  const handleMetricChange = (event) => {
+    setMetric(event.target.value);
+  };
+
+  const SetSearch = async () => {
+    var CollectionName = globalSearch;
+    var EmbeddingValue = "Embed";
+    var AdditionalQuery = "123";
+    let response = await searchClient.SetSearch(
+      CollectionName,
+      EmbeddingValue,
+      AdditionalQuery
+    );
+    setTableData(response);
+  };
+
   const columns = [
-    { id: 'name', label: 'Name' },
-    { id: 'age', label: 'Age' },
-    { id: 'email', label: 'Email' },
-    { id: 'city', label: 'City' },
-    { id: 'country', label: 'Country' },
-    { id: 'job', label: 'Job' },
-    { id: 'hobby', label: 'Hobby' },
-    { id: 'phone', label: 'Phone' },
-    { id: 'address', label: 'Address' },
-  ];
-  
-  const data = [
-    { name: 'Person 1', age: 25, email: 'person1@example.com', city: 'City 1', country: 'Country 1', job: 'Job 1', hobby: 'Hobby 1', phone: '123-456-0001', address: 'Address 1' },
-    { name: 'Person 2', age: 30, email: 'person2@example.com', city: 'City 2', country: 'Country 2', job: 'Job 2', hobby: 'Hobby 2', phone: '123-456-0002', address: 'Address 2' },
-    { name: 'Person 3', age: 35, email: 'person3@example.com', city: 'City 3', country: 'Country 3', job: 'Job 3', hobby: 'Hobby 3', phone: '123-456-0003', address: 'Address 3' },
-    { name: 'Person 4', age: 40, email: 'person4@example.com', city: 'City 4', country: 'Country 4', job: 'Job 4', hobby: 'Hobby 4', phone: '123-456-0004', address: 'Address 4' },
-    { name: 'Person 5', age: 45, email: 'person5@example.com', city: 'City 5', country: 'Country 5', job: 'Job 5', hobby: 'Hobby 5', phone: '123-456-0005', address: 'Address 5' },
-    { name: 'Person 6', age: 50, email: 'person6@example.com', city: 'City 6', country: 'Country 6', job: 'Job 6', hobby: 'Hobby 6', phone: '123-456-0006', address: 'Address 6' },
-    { name: 'Person 7', age: 55, email: 'person7@example.com', city: 'City 7', country: 'Country 7', job: 'Job 7', hobby: 'Hobby 7', phone: '123-456-0007', address: 'Address 7' },
-    { name: 'Person 8', age: 60, email: 'person8@example.com', city: 'City 8', country: 'Country 8', job: 'Job 8', hobby: 'Hobby 8', phone: '123-456-0008', address: 'Address 8' },
-    { name: 'Person 9', age: 65, email: 'person9@example.com', city: 'City 9', country: 'Country 9', job: 'Job 9', hobby: 'Hobby 9', phone: '123-456-0009', address: 'Address 9' },
-    { name: 'Person 10', age: 70, email: 'person10@example.com', city: 'City 10', country: 'Country 10', job: 'Job 10', hobby: 'Hobby 10', phone: '123-456-0010', address: 'Address 10' },
-    { name: 'Person 11', age: 75, email: 'person11@example.com', city: 'City 11', country: 'Country 11', job: 'Job 11', hobby: 'Hobby 11', phone: '123-456-0011', address: 'Address 11' },
-    { name: 'Person 12', age: 80, email: 'person12@example.com', city: 'City 12', country: 'Country 12', job: 'Job 12', hobby: 'Hobby 12', phone: '123-456-0012', address: 'Address 12' },
-    { name: 'Person 13', age: 85, email: 'person13@example.com', city: 'City 13', country: 'Country 13', job: 'Job 13', hobby: 'Hobby 13', phone: '123-456-0013', address: 'Address 13' },
-    { name: 'Person 14', age: 90, email: 'person14@example.com', city: 'City 14', country: 'Country 14', job: 'Job 14', hobby: 'Hobby 14', phone: '123-456-0014', address: 'Address 14' },
-    { name: 'Person 15', age: 95, email: 'person15@example.com', city: 'City 15', country: 'Country 15', job: 'Job 15', hobby: 'Hobby 15', phone: '123-456-0015', address: 'Address 15' },
+    { id: "Id", label: "Id" },
+    { id: "Score", label: "Score" },
+    { id: "Title", label: "Title" },
+    { id: "Link", label: "Link" },
+    { id: "ReadingTime", label: "ReadingTime" },
+    { id: "Publication", label: "Publication" },
+    { id: "Claps", label: "Claps" },
   ];
 
+  const data = [
+    {
+      Id: 1,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 2,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 3,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 4,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 5,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 6,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 7,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 8,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 9,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+    {
+      Id: 10,
+      Score: "Placeholder",
+      Title: "Placeholder",
+      Link: "Placeholder",
+      ReadingTime: "Placeholder",
+      Publication: "Placeholder",
+      Claps: "Placeholder",
+    },
+  ];
+
+  const handleSearch = () => {};
+
   return (
-    <div>
-      <h2>Search</h2>
-      <MaterialTable columns={columns} data={data} />
-    </div>
+    <>
+      <Container className="custom-container" component={Paper}>
+        <h2>Search</h2>
+        <div>
+          <Grid container spacing={2}>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Global Search"
+                value={globalSearch}
+                onChange={(event) => setGlobalSearch(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Id"
+                value={id}
+                onChange={(event) => setId(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Score"
+                value={score}
+                onChange={(event) => setScore(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Link"
+                value={link}
+                onChange={(event) => setLink(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <div className="flex-div">
+                <Select
+                  value={readingTimeOperator}
+                  onChange={(event) =>
+                    setReadingTimeOperator(event.target.value)
+                  }
+                >
+                  <MenuItem value="=">=</MenuItem>
+                  <MenuItem value=">">{">"}</MenuItem>
+                  <MenuItem value="<">{"<"}</MenuItem>
+                </Select>
+                <TextField
+                  fullWidth
+                  label="Reading Time"
+                  value={readingTimeValue}
+                  type="number"
+                  onChange={(event) => setReadingTimeValue(event.target.value)}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="Publication"
+                value={publication}
+                onChange={(event) => setPublication(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <div className="flex-div">
+                <Select
+                  value={clapsOperator}
+                  onChange={(event) => setClapsOperator(event.target.value)}
+                >
+                  <MenuItem value="=">=</MenuItem>
+                  <MenuItem value=">">{">"}</MenuItem>
+                  <MenuItem value="<">{"<"}</MenuItem>
+                </Select>
+                <TextField
+                  fullWidth
+                  label="Claps"
+                  value={clapsValue}
+                  type="number"
+                  onChange={(event) => setClapsValue(event.target.value)}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} className="text-right">
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleSearch}
+                className="m-primary-btn c-height m-r-15"
+              >
+                Clear Search
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => SetSearch()}
+                className="m-primary-btn c-height"
+              >
+                Search
+              </Button>
+            </Grid>
+          </Grid>
+        </div>
+      </Container>
+      <Container className="custom-container" component={Paper}>
+        <MaterialTable columns={columns} data={data} />
+      </Container>
+      <Container className="custom-container" component={Paper}>
+        <h2>Create Index</h2>
+        <div className="m-flex-div">
+          <FormControl fullWidth>
+            <InputLabel id="index-type-label">Index Type</InputLabel>
+            <Select
+              labelId="index-type-label"
+              id="index-type-select"
+              label="Index Type"
+              value={indexType}
+              onChange={handleIndexTypeChange}
+            >
+              <MenuItem value="Type1">Type 1</MenuItem>
+              <MenuItem value="Type2">Type 2</MenuItem>
+              <MenuItem value="Type3">Type 3</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="metric-label">Metric</InputLabel>
+            <Select
+              labelId="metric-label"
+              id="metric-select"
+              label="Metric"
+              value={metric}
+              onChange={handleMetricChange}
+            >
+              <MenuItem value="Metric1">Metric 1</MenuItem>
+              <MenuItem value="Metric2">Metric 2</MenuItem>
+              <MenuItem value="Metric3">Metric 3</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField label="Nlist" fullWidth />
+          <TextField label="Nprobe" fullWidth />
+          <Button variant="contained" color="primary" className="m-primary-btn">
+            Create Index
+          </Button>
+        </div>
+      </Container>
+    </>
   );
 };
 
