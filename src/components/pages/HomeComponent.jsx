@@ -16,18 +16,18 @@ import SearchClient from "../../api-service/search-api/search";
 const HomeComponent = () => {
   const searchClient = new SearchClient();
   const [globalSearch, setGlobalSearch] = useState("");
-  const [id, setId] = useState("");
-  const [score, setScore] = useState("");
   const [title, setTitle] = useState("");
-  const [link, setLink] = useState("");
   const [readingTimeOperator, setReadingTimeOperator] = useState("=");
   const [readingTimeValue, setReadingTimeValue] = useState("");
-  const [clapsOperator, setClapsOperator] = useState("=");
-  const [clapsValue, setClapsValue] = useState("");
   const [publication, setPublication] = useState("");
+
   const [indexType, setIndexType] = useState("");
   const [metric, setMetric] = useState("");
+  const [nlist, setNlist] = useState("");
+  
   const [tableData, setTableData] = useState([]);
+
+  const [showLoader, setShowLoader] = useState(false);
 
   const handleIndexTypeChange = (event) => {
     setIndexType(event.target.value);
@@ -37,125 +37,77 @@ const HomeComponent = () => {
     setMetric(event.target.value);
   };
 
-  const SetSearch = async () => {
-    var CollectionName = globalSearch;
-    var EmbeddingValue = "Embed";
-    var AdditionalQuery = "123";
-    let response = await searchClient.SetSearch(
-      CollectionName,
-      EmbeddingValue,
-      AdditionalQuery
+const CreateIndex = async () => {
+   setShowLoader(true);
+    let response = await searchClient.create_index(
+      JSON.stringify({
+        collection_name: "books",
+        field_name: "title_vector",
+        index_params: {
+          metric_type: metric,
+          index_type: indexType,
+          params: {
+            nlist: nlist,
+          }
+        }
+      })
     );
-    setTableData(response);
+    console.log(response);
+   setShowLoader(false);
+}
+
+  const SetSearch = async () => {
+   setShowLoader(true);
+    var CollectionName = "books";
+    var EmbeddingValue = globalSearch;
+
+    let conditions = [];
+
+    if (title) {
+      conditions.push(`title like '${title}%'`);
+    }
+
+    if (readingTimeValue) {
+      conditions.push(`reading_time ${readingTimeOperator} ${readingTimeValue}`);
+    }
+
+    if (publication) {
+      conditions.push(`publication like '${publication}%'`);
+    }
+
+    let query = "";
+    if (conditions.length > 0) {
+      query += conditions.join(" and ");
+    }
+
+    let response = await searchClient.search(
+      JSON.stringify({
+        collection_name: CollectionName,
+        embedding_query: EmbeddingValue,
+        additional_expression: query
+      })
+    );
+   setTableData(response);
+   console.log(response);
+   
+   setShowLoader(true);
   };
 
   const columns = [
-    { id: "Id", label: "Id" },
-    { id: "Score", label: "Score" },
-    { id: "Title", label: "Title" },
-    { id: "Link", label: "Link" },
-    { id: "ReadingTime", label: "ReadingTime" },
-    { id: "Publication", label: "Publication" },
-    { id: "Claps", label: "Claps" },
-  ];
-
-  const data = [
-    {
-      Id: 1,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 2,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 3,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 4,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 5,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 6,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 7,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 8,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 9,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
-    {
-      Id: 10,
-      Score: "Placeholder",
-      Title: "Placeholder",
-      Link: "Placeholder",
-      ReadingTime: "Placeholder",
-      Publication: "Placeholder",
-      Claps: "Placeholder",
-    },
+    { id: "id", label: "Id" },
+    { id: "score", label: "Score" },
+    { id: "title", label: "Title" },
+    { id: "link", label: "Link" },
+    { id: "readingTime", label: "ReadingTime" },
+    { id: "publication", label: "Publication" },
+    { id: "claps", label: "Claps" },
   ];
 
   const handleSearch = () => {};
 
   return (
     <>
+    {/* {showLoader && "LOADER"} */}
       <Container className="custom-container" component={Paper}>
         <h2>Search</h2>
         <div>
@@ -171,33 +123,9 @@ const HomeComponent = () => {
             <Grid item xs={3}>
               <TextField
                 fullWidth
-                label="Id"
-                value={id}
-                onChange={(event) => setId(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                fullWidth
-                label="Score"
-                value={score}
-                onChange={(event) => setScore(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                fullWidth
                 label="Title"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                fullWidth
-                label="Link"
-                value={link}
-                onChange={(event) => setLink(event.target.value)}
               />
             </Grid>
             <Grid item xs={3}>
@@ -229,34 +157,7 @@ const HomeComponent = () => {
                 onChange={(event) => setPublication(event.target.value)}
               />
             </Grid>
-            <Grid item xs={3}>
-              <div className="flex-div">
-                <Select
-                  value={clapsOperator}
-                  onChange={(event) => setClapsOperator(event.target.value)}
-                >
-                  <MenuItem value="=">=</MenuItem>
-                  <MenuItem value=">">{">"}</MenuItem>
-                  <MenuItem value="<">{"<"}</MenuItem>
-                </Select>
-                <TextField
-                  fullWidth
-                  label="Claps"
-                  value={clapsValue}
-                  type="number"
-                  onChange={(event) => setClapsValue(event.target.value)}
-                />
-              </div>
-            </Grid>
             <Grid item xs={12} className="text-right">
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleSearch}
-                className="m-primary-btn c-height m-r-15"
-              >
-                Clear Search
-              </Button>
               <Button
                 variant="contained"
                 color="primary"
@@ -270,7 +171,7 @@ const HomeComponent = () => {
         </div>
       </Container>
       <Container className="custom-container" component={Paper}>
-        <MaterialTable columns={columns} data={data} />
+        <MaterialTable columns={columns} data={tableData} />
       </Container>
       <Container className="custom-container" component={Paper}>
         <h2>Create Index</h2>
@@ -284,9 +185,8 @@ const HomeComponent = () => {
               value={indexType}
               onChange={handleIndexTypeChange}
             >
-              <MenuItem value="Type1">Type 1</MenuItem>
-              <MenuItem value="Type2">Type 2</MenuItem>
-              <MenuItem value="Type3">Type 3</MenuItem>
+              <MenuItem value="FLAT">FLAT</MenuItem>
+              <MenuItem value="IVF_FLAT">IVF_FLAT</MenuItem>
             </Select>
           </FormControl>
           <FormControl fullWidth>
@@ -298,14 +198,12 @@ const HomeComponent = () => {
               value={metric}
               onChange={handleMetricChange}
             >
-              <MenuItem value="Metric1">Metric 1</MenuItem>
-              <MenuItem value="Metric2">Metric 2</MenuItem>
-              <MenuItem value="Metric3">Metric 3</MenuItem>
+              <MenuItem value="L2">L2</MenuItem>
+              <MenuItem value="IP">IP</MenuItem>
             </Select>
           </FormControl>
-          <TextField label="Nlist" fullWidth />
-          <TextField label="Nprobe" fullWidth />
-          <Button variant="contained" color="primary" className="m-primary-btn">
+          <TextField label="Nlist" fullWidth onChange={(event) => setNlist(event.target.value)} />
+          <Button variant="contained" color="primary" className="m-primary-btn" onClick={() => CreateIndex()}>
             Create Index
           </Button>
         </div>

@@ -2,10 +2,11 @@ import API from "../api";
 
 class SearchClient {
 
-  async GetConnectedCardsByClientId(id) {
+  async search(data) {
     try {
-      var response = await API.get(
-        "/Clients/GetConnectedCardsByClientId/" + id
+      var response = await API.post(
+        "search", data, 
+        { headers: { 'Content-Type': 'application/json; charset=UTF-8' } }
       );
       if (response.status !== 200) {
         Error(response.message);
@@ -13,20 +14,23 @@ class SearchClient {
         return response.data;
       }
     } catch (err) {
-      Error("Greška kod pribavljanja informacija o klijentu.");
+      Error("Greška.");
     }
   }
 
-  async ManageConnectedCards(data) {
+  async create_index(data) {
     try {
-      var response = await API.post("/Clients/ManageConnectedCards", data);
+      var response = await API.post(
+        "create_index", data, 
+        { headers: { 'Content-Type': 'application/json; charset=UTF-8' } }
+      );
       if (response.status !== 200) {
         Error(response.message);
       } else {
         return response.data;
       }
     } catch (err) {
-      Error("Greška kod izmene kartica.");
+      Error("Greška.");
     }
   }
 }
