@@ -1,4 +1,5 @@
 import API from "../api";
+import { Success, Error } from "../../components/toastify/toastify";
 
 class SearchClient {
 
@@ -27,6 +28,7 @@ class SearchClient {
       if (response.status !== 200) {
         Error(response.message);
       } else {
+        Success("Success");
         return response.data;
       }
     } catch (err) {

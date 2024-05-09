@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MaterialTable from "../MaterialTableComponent";
 import {
   Grid,
@@ -12,6 +12,7 @@ import {
   InputLabel,
 } from "@mui/material";
 import SearchClient from "../../api-service/search-api/search";
+import LoadingSpinner from "../loader/Loader.component";
 
 const HomeComponent = () => {
   const searchClient = new SearchClient();
@@ -24,7 +25,7 @@ const HomeComponent = () => {
   const [indexType, setIndexType] = useState("");
   const [metric, setMetric] = useState("");
   const [nlist, setNlist] = useState("");
-  
+
   const [tableData, setTableData] = useState([]);
 
   const [showLoader, setShowLoader] = useState(false);
@@ -37,8 +38,8 @@ const HomeComponent = () => {
     setMetric(event.target.value);
   };
 
-const CreateIndex = async () => {
-   setShowLoader(true);
+  const CreateIndex = async () => {
+    setShowLoader(true);
     let response = await searchClient.create_index(
       JSON.stringify({
         collection_name: "books",
@@ -48,16 +49,16 @@ const CreateIndex = async () => {
           index_type: indexType,
           params: {
             nlist: nlist,
-          }
-        }
+          },
+        },
       })
     );
     console.log(response);
-   setShowLoader(false);
-}
+    setShowLoader(false);
+  };
 
   const SetSearch = async () => {
-   setShowLoader(true);
+    setShowLoader(true);
     var CollectionName = "books";
     var EmbeddingValue = globalSearch;
 
@@ -68,7 +69,9 @@ const CreateIndex = async () => {
     }
 
     if (readingTimeValue) {
-      conditions.push(`reading_time ${readingTimeOperator} ${readingTimeValue}`);
+      conditions.push(
+        `reading_time ${readingTimeOperator} ${readingTimeValue}`
+      );
     }
 
     if (publication) {
@@ -84,13 +87,13 @@ const CreateIndex = async () => {
       JSON.stringify({
         collection_name: CollectionName,
         embedding_query: EmbeddingValue,
-        additional_expression: query
+        additional_expression: query,
       })
     );
-   setTableData(response);
-   console.log(response);
-   
-   setShowLoader(true);
+    setTableData(response);
+    console.log(response);
+
+    setShowLoader(true);
   };
 
   const columns = [
@@ -103,71 +106,55 @@ const CreateIndex = async () => {
     { id: "claps", label: "Claps" },
   ];
 
-  const handleSearch = () => {};
-
   return (
     <>
-    {/* {showLoader && "LOADER"} */}
+      {showLoader && <LoadingSpinner />}
       <Container className="custom-container" component={Paper}>
         <h2>Search</h2>
-        <div>
-          <Grid container spacing={2}>
-            <Grid item xs={3}>
-              <TextField
-                fullWidth
-                label="Global Search"
-                value={globalSearch}
-                onChange={(event) => setGlobalSearch(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                fullWidth
-                label="Title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <div className="flex-div">
-                <Select
-                  value={readingTimeOperator}
-                  onChange={(event) =>
-                    setReadingTimeOperator(event.target.value)
-                  }
-                >
-                  <MenuItem value="=">=</MenuItem>
-                  <MenuItem value=">">{">"}</MenuItem>
-                  <MenuItem value="<">{"<"}</MenuItem>
-                </Select>
-                <TextField
-                  fullWidth
-                  label="Reading Time"
-                  value={readingTimeValue}
-                  type="number"
-                  onChange={(event) => setReadingTimeValue(event.target.value)}
-                />
-              </div>
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                fullWidth
-                label="Publication"
-                value={publication}
-                onChange={(event) => setPublication(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} className="text-right">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => SetSearch()}
-                className="m-primary-btn c-height"
-              >
-                Search
-              </Button>
-            </Grid>
-          </Grid>
+        <div className="m-flex-div">
+          <TextField
+            fullWidth
+            label="Global Search"
+            value={globalSearch}
+            onChange={(event) => setGlobalSearch(event.target.value)}
+          />
+          <TextField
+            fullWidth
+            label="Title"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+          <div className="flex-100">
+            <Select
+              value={readingTimeOperator}
+              onChange={(event) => setReadingTimeOperator(event.target.value)}
+            >
+              <MenuItem value="=">=</MenuItem>
+              <MenuItem value=">">{">"}</MenuItem>
+              <MenuItem value="<">{"<"}</MenuItem>
+            </Select>
+            <TextField
+              fullWidth
+              label="Reading Time"
+              value={readingTimeValue}
+              type="number"
+              onChange={(event) => setReadingTimeValue(event.target.value)}
+            />
+          </div>
+          <TextField
+            fullWidth
+            label="Publication"
+            value={publication}
+            onChange={(event) => setPublication(event.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => SetSearch()}
+            className="m-primary-btn c-height"
+          >
+            Search
+          </Button>
         </div>
       </Container>
       <Container className="custom-container" component={Paper}>
@@ -202,8 +189,17 @@ const CreateIndex = async () => {
               <MenuItem value="IP">IP</MenuItem>
             </Select>
           </FormControl>
-          <TextField label="Nlist" fullWidth onChange={(event) => setNlist(event.target.value)} />
-          <Button variant="contained" color="primary" className="m-primary-btn" onClick={() => CreateIndex()}>
+          <TextField
+            label="Nlist"
+            fullWidth
+            onChange={(event) => setNlist(event.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className="m-primary-btn"
+            onClick={() => CreateIndex()}
+          >
             Create Index
           </Button>
         </div>
